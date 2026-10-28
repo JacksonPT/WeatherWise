@@ -23,18 +23,35 @@ A responsive single-page weather forecasting application built for the **CS 555 
 
 1. Clone or download this folder.
 2. Sign up for a free OpenWeatherMap API key: https://home.openweathermap.org/api_keys
-3. Open `config.js` and replace `YOUR_OPENWEATHERMAP_API_KEY_HERE` with your key.
-4. Open `index.html` in your browser.
+3. Copy `.env.example` to `.env`.
+4. Open `.env` and replace `YOUR_OPENWEATHERMAP_API_KEY_HERE` with your key. The local `.env` file is gitignored; never commit a real key.
+5. Generate the browser configuration:
 
-No build step or server required — open `index.html` directly or serve with any static server (e.g., VS Code Live Server).
+   ```bash
+   python3 scripts/generate-config.py
+   ```
+
+6. Serve the folder with a static server, then open the displayed URL:
+
+   ```bash
+   python3 -m http.server 8000
+   ```
+
+   Visit http://localhost:8000 in your browser.
+
+No build step or package installation is required. A static server is recommended because browser security policies can block API requests when `index.html` is opened directly from `file://`.
 
 ## Project Structure
 ```
-Weather Report/
+WeatherWise/
 ├── index.html      # App shell (semantic, ARIA)
 ├── style.css       # Design system, light/dark themes, responsive
 ├── app.js          # App logic (API, geolocation, favorites, units, theme)
-├── config.js       # API key & config (gitignored in real repos)
+├── .env.example     # Safe environment-variable template
+├── .env             # Local API key and settings (gitignored)
+├── scripts/
+│   └── generate-config.py # Generates ignored config.js from .env
+├── config.js        # Generated browser configuration (gitignored)
 ├── README.md       # This file
 ├── ROADMAP.md      # Product roadmap
 ├── SPRINT_1.md     # Sprint 1 backlog & tasks

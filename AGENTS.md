@@ -17,9 +17,9 @@ repository.
 
 - **Active branch:** `feat/sprint-1`
 - **Active OpenSpec change:** `sprint-1-weather-mvp`
-- **OpenSpec status:** Proposal, design, capability spec, and task artifacts are complete; implementation is next.
+- **OpenSpec status:** Proposal, design, capability spec, and task artifacts are complete; Sprint 1 implementation is complete and ready for review/archive.
 - **Baseline:** `main` contains the initial WeatherWise application commit.
-- **Working rule:** Do not place a real API key in source control. `config.js` currently contains a placeholder and is required by `index.html`.
+- **Working rule:** Do not place a real API key in source control. Copy `.env.example` to the ignored local `.env`, then generate the ignored browser `config.js`.
 
 Update this snapshot when the active branch, OpenSpec change, or implementation
 phase changes. Do not treat it as a substitute for `git status` or OpenSpec
@@ -32,7 +32,11 @@ WeatherWise/
 ├── index.html                         # Semantic application shell and script entry points
 ├── app.js                              # Browser state, API calls, rendering, events, and persistence
 ├── style.css                           # Mobile-first design system, layout, themes, and component styles
-├── config.js                           # OpenWeatherMap endpoint, API-key placeholder, and defaults
+├── .env.example                        # Safe environment-variable configuration template
+├── .env                                # Local API-key configuration (ignored)
+├── scripts/
+│   └── generate-config.py              # Generates ignored config.js from .env
+├── config.js                           # Generated browser configuration (ignored)
 ├── README.md                           # Setup, features, structure, and project overview
 ├── ROADMAP.md                          # Product roadmap and future direction
 ├── SPRINT_1.md                         # Sprint 1 goal, backlog, tasks, DoD, and retrospective

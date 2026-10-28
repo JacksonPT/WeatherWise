@@ -39,9 +39,20 @@ const favList = document.getElementById("favList");
 const clearFavs = document.getElementById("clearFavs");
 
 /* --- State --- */
-let isMetric = JSON.parse(localStorage.getItem("ww_isMetric")) ?? true;
+function readStoredBoolean(key, fallback) {
+  try {
+    const value = JSON.parse(localStorage.getItem(key));
+    return typeof value === "boolean" ? value : fallback;
+  } catch {
+    return fallback;
+  }
+}
+
+let isMetric = readStoredBoolean("ww_isMetric", true);
 let favorites = JSON.parse(localStorage.getItem("ww_favorites")) || [];
-let isDark = JSON.parse(localStorage.getItem("ww_isDark")) ?? false;
+let isDark = readStoredBoolean("ww_isDark", false);
+let currentWeatherData = null;
+let forecastEntries = [];
 
 /* --- Theme init --- */
 function applyTheme() {
@@ -58,13 +69,20 @@ function formatUnitLabel() {
   return isMetric ? "°C" : "°F";
 }
 
+function formatWind(metersPerSecond) {
+  const speed = isMetric ? metersPerSecond : metersPerSecond * 2.23694;
+  return `${Math.round(speed)} ${isMetric ? "m/s" : "mph"}`;
+}
+
 /* --- Loading / Error UI --- */
 function showLoading(msg = "Loading weather…") {
+  loader.hidden = false;
   loader.style.display = "flex";
   loaderText.textContent = msg;
   hideError();
 }
 function hideLoading() {
+  loader.hidden = true;
   loader.style.display = "none";
 }
 function showError(msg) {
@@ -80,6 +98,7 @@ function hideError() {
 
 /* --- Render current weather --- */
 function renderCurrent(data) {
+  currentWeatherData = data;
   const dt = new Date(data.dt * 1000);
   const options = { weekday: "long", year: "numeric", month: "long", day: "numeric" };
   cityNameEl.textContent = `${data.name}, ${data.sys.country}`;
@@ -89,7 +108,7 @@ function renderCurrent(data) {
   weatherDescEl.textContent = data.weather[0].description;
   feelsLikeEl.textContent = `${formatTemp(data.main.feels_like)} ${formatUnitLabel()}`;
   humidityEl.textContent = `${data.main.humidity}%`;
-  windEl.textContent = `${Math.round(data.wind.speed)} ${isMetric ? "m/s" : "mph"}`;
+  windEl.textContent = formatWind(data.wind.speed);
 
   const iconCode = data.weather[0].icon;
   weatherIconEl.src = `https://openweathermap.org/img/wn/${iconCode}@2x.png`;
@@ -100,11 +119,12 @@ function renderCurrent(data) {
 
 /* --- Render 5-day forecast --- */
 function renderForecast(list) {
+  forecastEntries = Array.isArray(list) ? list : [];
   forecastList.innerHTML = "";
   // One Call / 5-day returns 3-hourly entries; pick one per day (midday ~12:00)
   const daily = [];
   const seenDates = new Set();
-  for (const entry of list) {
+  for (const entry of forecastEntries) {
     const d = new Date(entry.dt * 1000);
     const dateKey = d.toDateString();
     if (seenDates.has(dateKey)) continue;
@@ -177,29 +197,78 @@ function saveFavorites() {
 }
 
 /* --- API fetch --- */
+class UserFacingWeatherError extends Error {
+  constructor(message) {
+    super(message);
+    this.name = "UserFacingWeatherError";
+  }
+}
+
+function getConfig() {
+  const config = window.CONFIG;
+  if (!config || !config.BASE_URL || !config.API_KEY || config.API_KEY === "YOUR_OPENWEATHERMAP_API_KEY_HERE") {
+    throw new UserFacingWeatherError(
+      "Weather API key is not configured. Copy .env.example to .env, add your key, and run the config generator."
+    );
+  }
+  return config;
+}
+
+async function requestWeatherJson(url, city, isCurrentWeather) {
+  let response;
+  try {
+    response = await fetch(url);
+  } catch {
+    throw new UserFacingWeatherError(
+      "Unable to reach the weather service. Check your connection and try again."
+    );
+  }
+
+  if (!response.ok) {
+    if (isCurrentWeather && response.status === 404) {
+      throw new UserFacingWeatherError(`"${city}" not found. Try another city.`);
+    }
+    throw new UserFacingWeatherError("The weather service is unavailable. Please try again later.");
+  }
+
+  try {
+    return await response.json();
+  } catch {
+    throw new UserFacingWeatherError("The weather service returned an invalid response. Please try again.");
+  }
+}
+
+async function fetchWeatherData(query, city) {
+  const config = getConfig();
+  const params = new URLSearchParams({
+    ...query,
+    appid: config.API_KEY,
+    units: "metric",
+  });
+  const [currentData, forecastData] = await Promise.all([
+    requestWeatherJson(`${config.BASE_URL}/weather?${params}`, city, true),
+    requestWeatherJson(`${config.BASE_URL}/forecast?${params}`, city, false),
+  ]);
+  return { currentData, forecastData };
+}
+
+function renderWeatherResults(currentData, forecastData) {
+  hideError();
+  renderCurrent(currentData);
+  renderForecast(forecastData.list);
+  addFavorite(currentData.name);
+}
+
 async function fetchWeather(city) {
   showLoading(`Fetching weather for ${city}…`);
   try {
-    const [currentRes, forecastRes] = await Promise.all([
-      fetch(`${CONFIG.BASE_URL}/weather?q=${encodeURIComponent(city)}&appid=${CONFIG.API_KEY}&units=metric`),
-      fetch(`${CONFIG.BASE_URL}/forecast?q=${encodeURIComponent(city)}&appid=${CONFIG.API_KEY}&units=metric`),
-    ]);
-
-    if (!currentRes.ok) {
-      if (currentRes.status === 404) throw new Error(`"${city}" not found. Try another city.`);
-      throw new Error("Weather service error. Please try again later.");
-    }
-    if (!forecastRes.ok) throw new Error("Unable to load forecast.");
-
-    const currentData = await currentRes.json();
-    const forecastData = await forecastRes.json();
-
-    hideError();
-    renderCurrent(currentData);
-    renderForecast(forecastData.list);
-    addFavorite(currentData.name);
+    const { currentData, forecastData } = await fetchWeatherData({ q: city }, city);
+    renderWeatherResults(currentData, forecastData);
   } catch (err) {
-    showError(err.message || "Something went wrong. Please try again.");
+    const message = err instanceof UserFacingWeatherError
+      ? err.message
+      : "Unable to load weather right now. Please try again.";
+    showError(message);
   } finally {
     hideLoading();
   }
@@ -216,19 +285,16 @@ function useGeolocation() {
     async (pos) => {
       const { latitude, longitude } = pos.coords;
       try {
-        const [currentRes, forecastRes] = await Promise.all([
-          fetch(`${CONFIG.BASE_URL}/weather?lat=${latitude}&lon=${longitude}&appid=${CONFIG.API_KEY}&units=metric`),
-          fetch(`${CONFIG.BASE_URL}/forecast?lat=${latitude}&lon=${longitude}&appid=${CONFIG.API_KEY}&units=metric`),
-        ]);
-        if (!currentRes.ok) throw new Error("Unable to fetch weather for your location.");
-        const currentData = await currentRes.json();
-        const forecastData = await forecastRes.json();
-        hideError();
-        renderCurrent(currentData);
-        renderForecast(forecastData.list);
-        addFavorite(currentData.name);
+        const { currentData, forecastData } = await fetchWeatherData(
+          { lat: String(latitude), lon: String(longitude) },
+          "your location"
+        );
+        renderWeatherResults(currentData, forecastData);
       } catch (err) {
-        showError(err.message);
+        const message = err instanceof UserFacingWeatherError
+          ? err.message
+          : "Unable to load weather for your location. Please try again.";
+        showError(message);
       } finally {
         hideLoading();
       }
@@ -258,14 +324,8 @@ geoBtn.addEventListener("click", useGeolocation);
 unitToggle.addEventListener("change", () => {
   isMetric = !unitToggle.checked;
   localStorage.setItem("ww_isMetric", JSON.stringify(isMetric));
-  unitLabelEl.textContent = formatUnitLabel();
-  feelsLikeEl.textContent = `${formatTemp(parseFloat(feelsLikeEl.textContent))} ${formatUnitLabel()}`;
-  // Re-render temps in current card
-  const rawC = isMetric
-    ? (parseFloat(tempValueEl.textContent) - 32) / 1.8
-    : parseFloat(tempValueEl.textContent);
-  tempValueEl.textContent = formatTemp(rawC);
-  windEl.textContent = `${Math.round(isMetric ? parseFloat(windEl.textContent) : parseFloat(windEl.textContent) * 0.44704)} ${isMetric ? "m/s" : "mph"}`;
+  if (currentWeatherData) renderCurrent(currentWeatherData);
+  if (forecastEntries.length > 0) renderForecast(forecastEntries);
 });
 
 themeToggle.addEventListener("click", () => {

@@ -4,12 +4,13 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>WeatherWise | Weather Forecasting App</title>
+  <link rel="icon" href="data:," />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <header class="header">
     <div class="container header-inner">
-      <div class="logo">Weather<span>Wise</span></div>
+      <h1 class="logo">Weather<span>Wise</span></h1>
       <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode">
         <span class="theme-icon">🌙</span>
       </button>
@@ -19,6 +20,7 @@
   <main class="container">
     <section class="search-card">
       <form id="searchForm" aria-label="Search weather by city">
+        <label class="sr-only" for="cityInput">City name</label>
         <input
           type="text"
           id="cityInput"
@@ -40,19 +42,19 @@
     </section>
 
     <!-- Loading -->
-    <div class="loader" id="loader" role="status" aria-live="polite">
+    <div class="loader" id="loader" role="status" aria-live="polite" aria-atomic="true" hidden>
       <div class="spinner"></div>
       <span id="loaderText">Loading weather...</span>
     </div>
 
     <!-- Error -->
-    <div class="error" id="error" role="alert" aria-live="assertive" hidden>
+    <div class="error" id="error" role="alert" aria-live="assertive" aria-atomic="true" hidden>
       <button class="error-close" id="errorClose" aria-label="Dismiss error">&times;</button>
       <span id="errorMsg"></span>
     </div>
 
     <!-- Current Weather -->
-    <section class="weather-card" id="currentCard" hidden>
+    <section class="weather-card" id="currentCard" aria-live="polite" hidden>
       <div class="weather-header">
         <h2 id="cityName" class="city-name">City</h2>
         <time id="cityDate" class="city-date"></time>
@@ -88,7 +90,7 @@
       </div>
       <div class="unit-toggle-row">
         <label class="unit-switch">
-          <input type="checkbox" id="unitToggle" />
+            <input type="checkbox" id="unitToggle" aria-label="Display temperatures in Fahrenheit" />
           <span class="unit-slider"></span>
           <span class="unit-text">°C / °F</span>
         </label>

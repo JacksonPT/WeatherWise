@@ -12,8 +12,13 @@ Thumbs.db
 !.env.example
 config.local.js
 *.local.js
+config.js
 
 # Logs and temporary files
 *.log
 tmp/
 temp/
+
+# Python cache
+__pycache__/
+*.pyc

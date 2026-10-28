@@ -2,13 +2,13 @@
 
 ## Context
 
-WeatherWise is a static browser application with `index.html`, `style.css`, `app.js`, and a small `config.js` file for the OpenWeatherMap endpoint and API key. It has no server, build step, or dependency manager, so the MVP must run from a browser using standard web APIs. See `proposal.md` for the motivation and `specs/current-weather/spec.md` for the behavior contract.
+WeatherWise is a static browser application with `index.html`, `style.css`, `app.js`, and generated browser configuration for the OpenWeatherMap endpoint. It has no server, package manager, or framework. Because browsers cannot read `.env` files, a dependency-free Python utility converts the local `.env` file into ignored `config.js` before the static app is served. See `proposal.md` for the motivation and `specs/current-weather/spec.md` for the behavior contract.
 
 ## Goals / Non-Goals
 
 **Goals:**
 
-- Keep the MVP deployable as static files with no build or server requirement.
+- Keep the MVP deployable as static files with no runtime server or package dependency; use one standard-library setup command to generate browser configuration.
 - Separate the semantic page structure, visual presentation, configuration, and client-side behavior across the existing project files.
 - Normalize request states so loading, success, and failure produce predictable UI transitions.
 - Keep temperatures in a single canonical form internally so unit switching does not require another network request.
@@ -38,13 +38,13 @@ The page will transition through idle, loading, success, and error states. Start
 
 The search interaction will remain a real HTML form so Enter submits naturally. Loading text will use a live status region, and failures will use an alert region with a dedicated dismiss control. Weather icons will receive descriptive alternative text, while CSS media rules provide the mobile-first layout.
 
-### Keep configuration explicit and documented
+### Keep secrets in `.env` and generate browser configuration
 
-The API key and endpoint remain in `config.js` for the current static project. The README will document the placeholder and warn that a production deployment should use environment variables and a backend proxy. A future change can introduce a safer deployment model without changing the user-facing weather contract.
+The API key and endpoint are stored in a local, ignored `.env` file. A standard-library Python utility validates the required key and generates the ignored `config.js` file that the browser loads. This keeps the static client simple while avoiding hard-coded credentials in source control. A future production deployment can move the key behind a backend proxy without changing the user-facing weather contract.
 
 ## Risks / Trade-offs
 
-- **[Exposed browser API key]** → Keep the key out of source control when it is real, document the limitation, and move to a backend proxy before production use.
+- **[Exposed browser API key]** → Keep `.env` and generated `config.js` ignored, document the limitation, and move to a backend proxy before production use.
 - **[Third-party API availability or rate limits]** → Translate non-success responses into friendly errors, keep retry possible, and avoid unnecessary requests during unit changes.
 - **[Opening files directly may restrict browser requests]** → Document serving through a simple local static server as an alternative to opening `index.html` directly.
 - **[Display-only conversion can drift if values are reparsed]** → Retain canonical numeric values for rendering rather than treating formatted labels as the source of truth.
