@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WeatherWise | Weather Forecasting App</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="header">
+    <div class="container header-inner">
+      <div class="logo">Weather<span>Wise</span></div>
+      <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode">
+        <span class="theme-icon">🌙</span>
+      </button>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="search-card">
+      <form id="searchForm" aria-label="Search weather by city">
+        <input
+          type="text"
+          id="cityInput"
+          placeholder="Enter a city (e.g., New York)"
+          autocomplete="off"
+          required
+          aria-required="true"
+        />
+        <button type="submit" id="searchBtn">Search</button>
+        <button
+          type="button"
+          id="geoBtn"
+          class="geo-btn"
+          aria-label="Use my current location"
+        >
+          📍 My Location
+        </button>
+      </form>
+    </section>
+
+    <!-- Loading -->
+    <div class="loader" id="loader" role="status" aria-live="polite">
+      <div class="spinner"></div>
+      <span id="loaderText">Loading weather...</span>
+    </div>
+
+    <!-- Error -->
+    <div class="error" id="error" role="alert" aria-live="assertive" hidden>
+      <button class="error-close" id="errorClose" aria-label="Dismiss error">&times;</button>
+      <span id="errorMsg"></span>
+    </div>
+
+    <!-- Current Weather -->
+    <section class="weather-card" id="currentCard" hidden>
+      <div class="weather-header">
+        <h2 id="cityName" class="city-name">City</h2>
+        <time id="cityDate" class="city-date"></time>
+      </div>
+      <div class="weather-main">
+        <div class="temp-display">
+          <span id="tempValue" class="temp">--</span>
+          <span class="unit" id="unitLabel">°C</span>
+        </div>
+        <img
+          id="weatherIcon"
+          class="weather-icon"
+          src=""
+          alt="weather condition icon"
+          width="100"
+          height="100"
+        />
+        <p id="weatherDesc" class="weather-desc">—</p>
+      </div>
+      <div class="weather-details">
+        <div class="detail">
+          <span class="detail-label">Feels Like</span>
+          <span id="feelsLike" class="detail-value">--</span>
+        </div>
+        <div class="detail">
+          <span class="detail-label">Humidity</span>
+          <span id="humidity" class="detail-value">--</span>
+        </div>
+        <div class="detail">
+          <span class="detail-label">Wind</span>
+          <span id="wind" class="detail-value">--</span>
+        </div>
+      </div>
+      <div class="unit-toggle-row">
+        <label class="unit-switch">
+          <input type="checkbox" id="unitToggle" />
+          <span class="unit-slider"></span>
+          <span class="unit-text">°C / °F</span>
+        </label>
+      </div>
+    </section>
+
+    <!-- 5-Day Forecast -->
+    <section class="forecast-card" id="forecastCard" hidden>
+      <div class="card-header">
+        <h2>5-Day Forecast</h2>
+      </div>
+      <div class="forecast-list" id="forecastList">
+        <!-- forecast cards injected here -->
+      </div>
+    </section>
+
+    <!-- Favorites -->
+    <section class="favorites-card" id="favoritesCard" hidden>
+      <div class="card-header">
+        <h2>Saved Locations</h2>
+        <button id="clearFavs" class="clear-btn" aria-label="Clear all favorites">Clear</button>
+      </div>
+      <div class="fav-list" id="favList">
+        <!-- favorite chips injected here -->
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer-inner">
+      <p>&copy; 2026 WeatherWise. Built for CS 555 Scrum Simulation Project.</p>
+      <p>Weather data by OpenWeatherMap</p>
+    </div>
+  </footer>
+
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
