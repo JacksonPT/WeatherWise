@@ -12,16 +12,15 @@ A clean, responsive weather forecasting application that lets users check curren
 
 | Phase | Sprint(s) | Feature | Description |
 |-------|-----------|---------|-------------|
-| **MVP** | 1–2 | Current weather by city | Search any city, see temp, condition, humidity, wind, "feels like" |
-| **MVP** | 1–2 | Unit toggle | Switch between °C and °F |
-| **MVP** | 1–2 | Error & loading states | City-not-found, network errors, spinners |
-| Phase 2 | 3 | 5-day / 3-hour forecast | Daily high/low with icons, upcoming days |
-| Phase 2 | 3 | Geolocation | "Weather near me" using browser GPS |
-| Phase 3 | 4–5 | Favorites | Save up to 5 cities with localStorage; quick-switch |
-| Phase 3 | 4–5 | Dark mode | Light/dark theme toggle |
-| Phase 4 | 6 | Weather alerts | Severe weather warnings for saved locations |
-| Phase 4 | 6 | PWA / offline | Installable app, cached last-known weather |
-| Phase 5 | 7+ | Maps & sharing | Interactive weather map, share forecast via link/social |
+| **MVP** | 1 | Current weather by city | Search any city, see temp, condition, humidity, wind, "feels like" |
+| **MVP** | 1 | Unit toggle | Switch between °C and °F |
+| **MVP** | 1 | Error & loading states | City-not-found, network errors, spinners |
+| Phase 2 | 2 | 5-day / 3-hour forecast | Daily high/low with icons, upcoming days |
+| Phase 2 | 2 | Geolocation | "Weather near me" using browser GPS |
+| Phase 2 | 2 | Favorites and dark mode | Save up to 5 cities; persistent light/dark theme |
+| Phase 3 | 3 | Weather alerts | Severe weather warnings for saved locations |
+| Phase 3 | 3 | PWA / offline | Installable app, cached last-known weather |
+| Phase 4 | 4+ | Maps & sharing | Interactive weather map, share forecast via link/social |
 
 ## Non-Functional Goals
 - **Responsive:** Works on mobile, tablet, desktop

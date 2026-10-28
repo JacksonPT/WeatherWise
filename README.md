@@ -6,18 +6,19 @@ A responsive single-page weather forecasting application built for the **CS 555 
 - Search weather by city name
 - Current conditions: temperature, feels-like, humidity, wind, condition icon
 - °C / °F unit toggle (persisted)
-- 5-day forecast (high/low + icons)
-- "Use my location" via browser geolocation
-- Save up to 5 favorite cities (persisted in localStorage)
+- 5-day forecast with daily highs/lows aggregated from 3-hour data
+- "Use my location" via browser geolocation, with city-search fallback
+- Explicitly save, revisit, and remove up to 5 favorite cities (persisted in localStorage)
 - Light / dark theme toggle (persisted)
 - Loading spinner & friendly error states
-- Mobile-first responsive design
+- Accessible, mobile-first responsive design with keyboard focus and live feedback
 
 ## Tech Stack
 - HTML5 (semantic, ARIA accessible)
 - CSS3 (CSS variables, light/dark themes, responsive grid)
 - Vanilla JavaScript (ES6+, no build step)
 - OpenWeatherMap API (Current Weather + 5-Day / 3-Hour Forecast)
+- Node.js built-in test runner for dependency-free regression tests (development only)
 
 ## Getting Started
 
@@ -41,6 +42,16 @@ A responsive single-page weather forecasting application built for the **CS 555 
 
 No build step or package installation is required. A static server is recommended because browser security policies can block API requests when `index.html` is opened directly from `file://`.
 
+## Tests and Browser Acceptance
+
+Run the dependency-free behavior suite with Node.js:
+
+```bash
+node --test
+```
+
+The suite uses mocked weather and browser APIs; it does not require an API key or call the live service. Use [`tests/acceptance-checklist.md`](tests/acceptance-checklist.md) for manual browser, keyboard, theme, and 375px/1200px viewport checks.
+
 ## Project Structure
 ```
 WeatherWise/
@@ -52,6 +63,9 @@ WeatherWise/
 ├── scripts/
 │   └── generate-config.py # Generates ignored config.js from .env
 ├── config.js        # Generated browser configuration (gitignored)
+├── tests/
+│   ├── app.test.js   # Mocked browser behavior regression suite
+│   └── acceptance-checklist.md # Real-browser and viewport checks
 ├── README.md       # This file
 ├── ROADMAP.md      # Product roadmap
 ├── SPRINT_1.md     # Sprint 1 backlog & tasks

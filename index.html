@@ -11,8 +11,8 @@
   <header class="header">
     <div class="container header-inner">
       <h1 class="logo">Weather<span>Wise</span></h1>
-      <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode">
-        <span class="theme-icon">🌙</span>
+      <button type="button" class="theme-toggle" id="themeToggle" aria-label="Switch to dark mode" aria-pressed="false">
+        <span class="theme-icon" aria-hidden="true">🌙</span>
       </button>
     </div>
   </header>
@@ -49,15 +49,19 @@
 
     <!-- Error -->
     <div class="error" id="error" role="alert" aria-live="assertive" aria-atomic="true" hidden>
-      <button class="error-close" id="errorClose" aria-label="Dismiss error">&times;</button>
+      <button type="button" class="error-close" id="errorClose" aria-label="Dismiss error">&times;</button>
       <span id="errorMsg"></span>
     </div>
 
     <!-- Current Weather -->
-    <section class="weather-card" id="currentCard" aria-live="polite" hidden>
+    <section class="weather-card" id="currentCard" aria-labelledby="cityName" hidden>
       <div class="weather-header">
         <h2 id="cityName" class="city-name">City</h2>
         <time id="cityDate" class="city-date"></time>
+      </div>
+      <div class="favorite-action">
+        <button type="button" id="saveFavoriteBtn" class="secondary-btn" disabled>Save location</button>
+        <p id="favoriteStatus" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></p>
       </div>
       <div class="weather-main">
         <div class="temp-display">
@@ -90,7 +94,7 @@
       </div>
       <div class="unit-toggle-row">
         <label class="unit-switch">
-            <input type="checkbox" id="unitToggle" aria-label="Display temperatures in Fahrenheit" />
+          <input type="checkbox" id="unitToggle" aria-label="Display temperatures in Fahrenheit" />
           <span class="unit-slider"></span>
           <span class="unit-text">°C / °F</span>
         </label>
@@ -98,9 +102,10 @@
     </section>
 
     <!-- 5-Day Forecast -->
-    <section class="forecast-card" id="forecastCard" hidden>
+    <p class="forecast-status" id="forecastStatus" role="status" aria-live="polite" aria-atomic="true" hidden></p>
+    <section class="forecast-card" id="forecastCard" aria-labelledby="forecastHeading" hidden>
       <div class="card-header">
-        <h2>5-Day Forecast</h2>
+        <h2 id="forecastHeading">5-Day Forecast</h2>
       </div>
       <div class="forecast-list" id="forecastList">
         <!-- forecast cards injected here -->
@@ -108,14 +113,14 @@
     </section>
 
     <!-- Favorites -->
-    <section class="favorites-card" id="favoritesCard" hidden>
+    <section class="favorites-card" id="favoritesCard" aria-labelledby="favoritesHeading" hidden>
       <div class="card-header">
-        <h2>Saved Locations</h2>
-        <button id="clearFavs" class="clear-btn" aria-label="Clear all favorites">Clear</button>
+        <h2 id="favoritesHeading">Saved Locations</h2>
+        <button type="button" id="clearFavs" class="clear-btn" aria-label="Clear all saved locations">Clear</button>
       </div>
-      <div class="fav-list" id="favList">
+      <ul class="fav-list" id="favList">
         <!-- favorite chips injected here -->
-      </div>
+      </ul>
     </section>
   </main>
 

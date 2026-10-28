@@ -10,14 +10,14 @@ change that introduces a structural or process change.
 WeatherWise is a static, single-page weather application for the CS 555 / SSW
 555 Agile Methods Scrum Simulation Project. It uses semantic HTML, CSS, and
 vanilla JavaScript to call the OpenWeatherMap API from the browser. There is no
-build step, package manager, server, or automated test suite currently in the
-repository.
+build step or package manager; a dependency-free Node.js test suite verifies
+mocked browser behavior.
 
 ## Current Work Snapshot
 
-- **Active branch:** `feat/sprint-1`
-- **Active OpenSpec change:** `sprint-1-weather-mvp`
-- **OpenSpec status:** Proposal, design, capability spec, and task artifacts are complete; Sprint 1 implementation is complete and ready for review/archive.
+- **Active branch:** `feat/sprint-2`
+- **Active OpenSpec change:** `sprint-2-forecast-and-personalization`
+- **OpenSpec status:** Sprint 1 is archived; Sprint 2 implementation and regression suite are complete. Real-browser visual viewport checks are documented but were unavailable in this environment.
 - **Baseline:** `main` contains the initial WeatherWise application commit.
 - **Working rule:** Do not place a real API key in source control. Copy `.env.example` to the ignored local `.env`, then generate the ignored browser `config.js`.
 
@@ -42,18 +42,28 @@ WeatherWise/
 ├── SPRINT_1.md                         # Sprint 1 goal, backlog, tasks, DoD, and retrospective
 ├── SPRINT_2.md                         # Sprint 2 backlog and follow-on features
 ├── REPORT.md                           # Scrum report and project artifacts
+├── tests/
+│   ├── app.test.js                      # Mocked behavior regression suite (`node --test`)
+│   └── acceptance-checklist.md          # Browser and viewport acceptance checks
 ├── AGENTS.md                           # This guide; update it as the project changes
 ├── .gitignore                          # OS/editor files, local environment files, and local config
 └── openspec/
     ├── config.yaml                     # OpenSpec project configuration
+    ├── specs/
+    │   └── current-weather/spec.md      # Synced Sprint 1 behavior baseline
     └── changes/
-        └── sprint-1-weather-mvp/
-            ├── proposal.md              # Why and scope of the Sprint 1 change
+        ├── archive/
+        │   └── 2026-10-28-sprint-1-weather-mvp/ # Archived Sprint 1 artifacts
+        └── sprint-2-forecast-and-personalization/
+            ├── proposal.md              # Why and scope of the Sprint 2 change
             ├── design.md                # Technical approach and trade-offs
             ├── tasks.md                 # Ordered implementation checklist
             └── specs/
-                └── current-weather/
-                    └── spec.md          # Observable current-weather requirements
+                ├── forecast/spec.md
+                ├── geolocation/spec.md
+                ├── favorites/spec.md
+                ├── theme/spec.md
+                └── accessible-interface/spec.md
 ```
 
 ### Source-of-truth boundaries
@@ -97,10 +107,11 @@ WeatherWise/
 
 ### Validation expectations
 
-At minimum, validate the changed behavior in a browser or with a documented
-manual check. For weather changes, cover valid city search, invalid city
-handling, loading behavior, unit changes, keyboard submission, and a 375px
-viewport when relevant. Before completing an OpenSpec change, run:
+At minimum, validate the changed behavior with `node --test` and use the
+documented browser checklist for visual and keyboard acceptance. For weather
+changes, cover valid city search, invalid city handling, loading behavior, unit
+changes, keyboard submission, and a 375px viewport when relevant. Before
+completing an OpenSpec change, run:
 
 ```bash
 openspec validate "<change-name>" --type change --strict
