@@ -228,6 +228,11 @@ async function requestWeatherJson(url, city, isCurrentWeather) {
     if (isCurrentWeather && response.status === 404) {
       throw new UserFacingWeatherError(`"${city}" not found. Try another city.`);
     }
+    if (response.status === 401) {
+      throw new UserFacingWeatherError(
+        "The weather API key is invalid or not active yet. Check .env, regenerate config.js, and try again."
+      );
+    }
     throw new UserFacingWeatherError("The weather service is unavailable. Please try again later.");
   }
 
