@@ -9,6 +9,8 @@ const searchForm = document.getElementById("searchForm");
 const cityInput = document.getElementById("cityInput");
 const searchBtn = document.getElementById("searchBtn");
 const geoBtn = document.getElementById("geoBtn");
+const DEMO_MODE = window.WEATHERWISE_DEMO === true;
+const DEMO_ERROR_MESSAGE = "API key required — this is only a demo.";
 
 const loader = document.getElementById("loader");
 const loaderText = document.getElementById("loaderText");
@@ -412,6 +414,11 @@ function renderWeatherResults(currentData, forecastData) {
 }
 
 async function fetchWeatherForQuery(query, label) {
+  if (DEMO_MODE) {
+    showError(DEMO_ERROR_MESSAGE);
+    return;
+  }
+
   showLoading(`Fetching weather for ${label}…`);
   try {
     const { currentData, forecastData } = await fetchWeatherData(query, label);
@@ -432,6 +439,11 @@ function fetchWeather(city) {
 
 /* --- Geolocation --- */
 function useGeolocation() {
+  if (DEMO_MODE) {
+    showError(DEMO_ERROR_MESSAGE);
+    return;
+  }
+
   if (!navigator.geolocation) {
     showError("Geolocation is not supported by your browser.");
     return;
@@ -505,3 +517,32 @@ applyTheme();
 renderFavorites();
 hideForecastStatus();
 updateSaveFavoriteButton();
+
+if (DEMO_MODE) {
+  const today = new Date();
+  const startOfDay = Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate());
+  const forecastDays = [
+    { high: 20, low: 14, description: "partly cloudy", icon: "02d" },
+    { high: 22, low: 15, description: "clear sky", icon: "01d" },
+    { high: 18, low: 12, description: "light rain", icon: "10d" },
+    { high: 17, low: 11, description: "scattered clouds", icon: "03d" },
+    { high: 19, low: 13, description: "few clouds", icon: "02d" },
+  ];
+  const currentData = {
+    name: "New York",
+    sys: { country: "US" },
+    dt: Math.floor(Date.now() / 1000),
+    main: { temp: 18, feels_like: 17, humidity: 54 },
+    wind: { speed: 3.6 },
+    weather: [{ description: "partly cloudy", icon: "02d" }],
+  };
+  const forecastData = {
+    city: { timezone: 0 },
+    list: forecastDays.map((day, index) => ({
+      dt: Math.floor((startOfDay + index * 24 * 60 * 60 * 1000 + 12 * 60 * 60 * 1000) / 1000),
+      main: { temp_max: day.high, temp_min: day.low },
+      weather: [{ description: day.description, icon: day.icon }],
+    })),
+  };
+  renderWeatherResults(currentData, forecastData);
+}

@@ -39,6 +39,7 @@
           📍 My Location
         </button>
       </form>
+      <p class="demo-notice">Demo mode: showing sample New York weather. Live search requires an API key.</p>
     </section>
 
     <!-- Loading -->
@@ -127,11 +128,11 @@
   <footer class="footer">
     <div class="container footer-inner">
       <p>&copy; 2026 WeatherWise. Built for CS 555 Scrum Simulation Project.</p>
-      <p>Weather data by OpenWeatherMap</p>
+      <p>Sample weather data — not live conditions</p>
     </div>
   </footer>
 
-  <script src="config.js"></script>
+  <script>window.WEATHERWISE_DEMO = true;</script>
   <script src="app.js"></script>
 </body>
 </html>

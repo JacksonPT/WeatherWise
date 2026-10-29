@@ -2,6 +2,8 @@
 
 Run after generating `config.js` and starting the documented static server. Use a valid API key or mocked OpenWeatherMap responses so checks do not depend on live weather conditions.
 
+For the `test/demo` branch, no API key or generated config is needed. Verify the sample New York conditions and five-day forecast appear on load, then search for another city and confirm the red “API key required — this is only a demo.” message appears without a network request.
+
 ## Functional flows
 
 - [ ] Search a valid city by button and Enter; verify current conditions, loading feedback, and five distinct forecast days.

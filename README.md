@@ -1,9 +1,31 @@
 # WeatherWise — Weather Forecasting App
 
-A responsive single-page weather forecasting application built for the **CS 555 / SSW 555 Agile Methods Scrum Simulation Project**.
+A responsive single-page weather forecasting application built for the **CS 555 / SSW 555 Agile Methods Scrum Simulation Project**. This `test/demo` branch is a no-key demo for GitHub Pages.
 
-## Features (Sprints 1–2)
-- Search weather by city name
+## Demo Features
+- Fixed sample current conditions and a five-day forecast for New York
+- Search and location controls show a red “API key required — this is only a demo.” message; they never make API requests
+- °C / °F unit toggle and light / dark theme toggle (persisted)
+- Responsive, accessible interface with keyboard focus and live feedback
+
+The displayed weather is sample data, not live conditions. This branch is intended for demonstration and does not need an API key.
+
+## Run Locally
+
+Serve this folder with any static server, then open the displayed URL:
+
+```bash
+python3 -m http.server 8000
+```
+
+Visit http://localhost:8000 in your browser.
+
+## Publish with GitHub Pages
+
+Push this branch to GitHub, then select **Settings → Pages → Deploy from a branch**, choose `test/demo` and the root (`/`) folder, and save. GitHub will display the Pages URL when deployment is ready.
+
+## Original Application Features
+- Search weather by city name (requires an API key outside demo mode)
 - Current conditions: temperature, feels-like, humidity, wind, condition icon
 - °C / °F unit toggle (persisted)
 - 5-day forecast with daily highs/lows aggregated from 3-hour data
@@ -17,30 +39,10 @@ A responsive single-page weather forecasting application built for the **CS 555 
 - HTML5 (semantic, ARIA accessible)
 - CSS3 (CSS variables, light/dark themes, responsive grid)
 - Vanilla JavaScript (ES6+, no build step)
-- OpenWeatherMap API (Current Weather + 5-Day / 3-Hour Forecast)
+- Fixed sample New York weather data (this branch makes no live API calls)
 - Node.js built-in test runner for dependency-free regression tests (development only)
 
-## Getting Started
-
-1. Clone or download this folder.
-2. Sign up for a free OpenWeatherMap API key: https://home.openweathermap.org/api_keys
-3. Copy `.env.example` to `.env`.
-4. Open `.env` and replace `YOUR_OPENWEATHERMAP_API_KEY_HERE` with your key. The local `.env` file is gitignored; never commit a real key.
-5. Generate the browser configuration:
-
-   ```bash
-   python3 scripts/generate-config.py
-   ```
-
-6. Serve the folder with a static server, then open the displayed URL:
-
-   ```bash
-   python3 -m http.server 8000
-   ```
-
-   Visit http://localhost:8000 in your browser.
-
-No build step or package installation is required. A static server is recommended because browser security policies can block API requests when `index.html` is opened directly from `file://`.
+No build step or package installation is required. A static server is recommended because browser security policies can block scripts when `index.html` is opened directly from `file://`.
 
 ## Tests and Browser Acceptance
 

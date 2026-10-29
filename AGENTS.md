@@ -9,17 +9,18 @@ change that introduces a structural or process change.
 
 WeatherWise is a static, single-page weather application for the CS 555 / SSW
 555 Agile Methods Scrum Simulation Project. It uses semantic HTML, CSS, and
-vanilla JavaScript to call the OpenWeatherMap API from the browser. There is no
-build step or package manager; a dependency-free Node.js test suite verifies
-mocked browser behavior.
+vanilla JavaScript. The `test/demo` branch shows fixed New York sample data and
+blocks live requests; the regular application uses the OpenWeatherMap API from
+the browser. There is no build step or package manager; a dependency-free
+Node.js test suite verifies mocked browser behavior.
 
 ## Current Work Snapshot
 
-- **Active branch:** `feat/sprint-2`
-- **Active OpenSpec change:** `sprint-2-forecast-and-personalization`
-- **OpenSpec status:** Sprint 1 is archived; Sprint 2 implementation and regression suite are complete. Real-browser visual viewport checks are documented but were unavailable in this environment.
+- **Active branch:** `test/demo`
+- **Active OpenSpec change:** `github-pages-weather-demo`
+- **OpenSpec status:** Sprint 1 is archived; Sprint 2 implementation and regression suite are complete. The demo branch serves fixed New York sample data without a key; real-browser visual viewport checks are documented but were unavailable in this environment.
 - **Baseline:** `main` contains the initial WeatherWise application commit.
-- **Working rule:** Do not place a real API key in source control. Copy `.env.example` to the ignored local `.env`, then generate the ignored browser `config.js`.
+- **Working rule:** Do not place a real API key in source control. The `test/demo` branch requires no API configuration; use `.env.example` and the ignored generated `config.js` only when working on the live-API application.
 
 Update this snapshot when the active branch, OpenSpec change, or implementation
 phase changes. Do not treat it as a substitute for `git status` or OpenSpec
@@ -30,7 +31,7 @@ status commands.
 ```text
 WeatherWise/
 ├── index.html                         # Semantic application shell and script entry points
-├── app.js                              # Browser state, API calls, rendering, events, and persistence
+├── app.js                              # Browser state, demo/API paths, rendering, events, and persistence
 ├── style.css                           # Mobile-first design system, layout, themes, and component styles
 ├── .env.example                        # Safe environment-variable configuration template
 ├── .env                                # Local API-key configuration (ignored)
@@ -54,6 +55,11 @@ WeatherWise/
     └── changes/
         ├── archive/
         │   └── 2026-10-28-sprint-1-weather-mvp/ # Archived Sprint 1 artifacts
+        ├── github-pages-weather-demo/
+        │   ├── proposal.md              # No-key static demo for teacher review
+        │   ├── design.md                # Demo-mode approach and trade-offs
+        │   ├── tasks.md                 # Verified implementation checklist
+        │   └── specs/demo-mode/spec.md  # Demo behavior requirements
         └── sprint-2-forecast-and-personalization/
             ├── proposal.md              # Why and scope of the Sprint 2 change
             ├── design.md                # Technical approach and trade-offs

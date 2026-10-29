@@ -86,7 +86,7 @@ function createStorage(seed = {}, unavailable = false) {
   };
 }
 
-function createApp({ fetchImpl, storage, geolocation } = {}) {
+function createApp({ fetchImpl, storage, geolocation, demoMode = false } = {}) {
   const elements = Object.fromEntries(elementIds.map((id) => [id, new MockElement(id)]));
   for (const id of ["loader", "error", "currentCard", "forecastCard", "favoritesCard", "forecastStatus"]) {
     elements[id].hidden = true;
@@ -110,7 +110,10 @@ function createApp({ fetchImpl, storage, geolocation } = {}) {
   const requests = [];
   const context = {
     document,
-    window: { CONFIG: { BASE_URL: "https://weather.example", API_KEY: "test-key" } },
+    window: {
+      CONFIG: { BASE_URL: "https://weather.example", API_KEY: "test-key" },
+      WEATHERWISE_DEMO: demoMode,
+    },
     navigator: geolocation === undefined ? {} : { geolocation },
     localStorage: storage || createStorage(),
     URLSearchParams,
@@ -186,6 +189,35 @@ test("empty city submission does not request weather", () => {
   app.elements.searchForm.dispatch("submit");
   assert.equal(app.requests.length, 0);
   assert.equal(app.elements.currentCard.hidden, true);
+});
+
+test("demo starts with sample New York weather and search shows the API-key notice", () => {
+  let locationRequests = 0;
+  const app = createApp({
+    demoMode: true,
+    fetchImpl: successfulFetch(),
+    storage: createStorage({ ww_favorites: JSON.stringify(["Boston"]) }),
+    geolocation: { getCurrentPosition() { locationRequests += 1; } },
+  });
+  assert.equal(app.elements.currentCard.hidden, false);
+  assert.equal(app.elements.cityName.textContent, "New York, US");
+  assert.equal(app.elements.tempValue.textContent, "18");
+  assert.equal(app.elements.forecastList.children.length, 5);
+  assert.equal(app.requests.length, 0);
+
+  app.elements.cityInput.value = "Chicago";
+  app.elements.searchForm.dispatch("submit");
+  assert.equal(app.elements.errorMsg.textContent, "API key required — this is only a demo.");
+  assert.equal(app.elements.error.hidden, false);
+  assert.equal(app.requests.length, 0);
+
+  app.elements.geoBtn.dispatch("click");
+  assert.equal(app.elements.errorMsg.textContent, "API key required — this is only a demo.");
+  assert.equal(locationRequests, 0);
+
+  app.elements.favList.children[0].children[0].dispatch("click");
+  assert.equal(app.elements.errorMsg.textContent, "API key required — this is only a demo.");
+  assert.equal(app.requests.length, 0);
 });
 
 test("city search shows loading, current conditions, and daily forecast", async () => {
@@ -366,6 +398,9 @@ test("page markup and styles expose accessible status, focus, and responsive rul
   assert.match(html, /id="forecastStatus" role="status" aria-live="polite"/);
   assert.match(html, /id="themeToggle"[^>]*aria-pressed="false"/);
   assert.match(html, /<ul class="fav-list" id="favList">/);
+  assert.match(html, /window\.WEATHERWISE_DEMO = true/);
+  assert.match(html, /sample New York weather/);
+  assert.doesNotMatch(html, /src="config\.js"/);
   assert.doesNotMatch(appSource, /innerHTML/);
   assert.match(css, /\*:focus-visible\s*\{/);
   assert.match(css, /@media \(max-width: 480px\)/);
